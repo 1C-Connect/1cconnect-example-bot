@@ -1,0 +1,7 @@
+# cd $(go env GOROOT)/src
+# GOROOT_BOOTSTRAP=~/Go/go/ GOOS=linux GOARCH=amd64 CGO_ENABLED=0 ./make.bash --no-clean
+
+export GOARCH=amd64
+export GOROOT=~/.go
+export GOPATH=`pwd`
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin

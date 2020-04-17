@@ -1,0 +1,6 @@
+build/
+.idea/
+
+src/config/config.yaml
+
+go.sum
