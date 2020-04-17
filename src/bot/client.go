@@ -15,15 +15,13 @@ import (
 	"сonnect-companion/logger"
 )
 
-
-
 var (
 	client = &http.Client{}
 )
 
 type (
 	HttpError struct {
-		Code int
+		Code    int
 		Message string
 	}
 )
@@ -37,9 +35,9 @@ func setHook(lineId *uuid.UUID) (content []byte, err error) {
 
 	connectHookUrl := fmt.Sprintf("%s/connect-push/receive/", cnf.Server.Host)
 	data := requests.HookSetupRequest{
-		Id: lineId,
+		Id:   lineId,
 		Type: "bot",
-		Url: connectHookUrl,
+		Url:  connectHookUrl,
 	}
 	jsonData, err := json.Marshal(data)
 
@@ -66,9 +64,9 @@ func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]
 	reqUrl := fmt.Sprintf("%s/v1/line/send/message/", cnf.Connect.Server)
 
 	data := requests.MessageRequest{
-		LineID: lineId,
-		UserId: userId,
-		Text: text,
+		LineID:   lineId,
+		UserId:   userId,
+		Text:     text,
 		Keyboard: keyboard,
 	}
 
@@ -86,8 +84,8 @@ func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath stri
 	reqUrl := fmt.Sprintf("%s/v1/line/send/file/", cnf.Connect.Server)
 
 	data := requests.FileRequest{
-		LineID: lineId,
-		UserId: userId,
+		LineID:   lineId,
+		UserId:   userId,
 		FileName: fileName,
 		Keyboard: keyboard,
 	}
@@ -136,7 +134,7 @@ func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath stri
 		logger.Warning("Error while send message with file", err)
 	}
 
-	return invoke(req, "multipart/form-data")
+	return invoke(req, writer.FormDataContentType())
 }
 
 func HideKeyboard(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error) {
@@ -229,7 +227,7 @@ func invoke(req *http.Request, contentType string) (content []byte, err error) {
 
 		if resp.StatusCode != http.StatusOK {
 			return nil, &HttpError{
-				Code: resp.StatusCode,
+				Code:    resp.StatusCode,
 				Message: string(bodyBytes),
 			}
 		}

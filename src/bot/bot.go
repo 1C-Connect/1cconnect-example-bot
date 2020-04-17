@@ -32,7 +32,7 @@ func Receive(c *gin.Context) {
 		switch strings.ToLower(msg.Text) {
 		case "здрасти!", "\\привет":
 			keyboard := &[][]requests.KeyboardKey{
-				{ { Id: "\\назад", Text: "Назад" } },
+				{{Id: "\\назад", Text: "Назад"}},
 			}
 
 			_, err := SendMessage(msg.LineId, msg.UserId, "Хохо печениги на месте!", keyboard)
@@ -41,12 +41,12 @@ func Receive(c *gin.Context) {
 			}
 		case "кинь файлом", "\\файл":
 			keyboard := &[][]requests.KeyboardKey{
-				{ { Id: "\\назад", Text: "Назад" } },
+				{{Id: "\\назад", Text: "Назад"}},
 			}
 			filePath, _ := filepath.Abs("build/image.jpg")
 			_, err := SendFile(msg.LineId, msg.UserId, "Мальчик.jpg", filePath, keyboard)
 			if err != nil {
-				logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
+				logger.Warning("Get error while send file to line", msg.LineId, "for user", msg.UserId, "with error", err)
 			}
 		case "закрыть обращение", "\\закрыть":
 			_, err := CloseTreatment(msg.LineId, msg.UserId)
@@ -60,8 +60,8 @@ func Receive(c *gin.Context) {
 			}
 		default:
 			keyboard := &[][]requests.KeyboardKey{
-				{ { Id: "\\привет", Text: "Здрасти!" }, { Id: "\\файл", Text: "Кинь файлом" } },
-				{ { Id: "\\закрыть", Text: "Закрыть обращение" }, { Id: "\\перевод", Text: "Переведи" } },
+				{{Id: "\\привет", Text: "Здрасти!"}, {Id: "\\файл", Text: "Кинь файлом"}},
+				{{Id: "\\закрыть", Text: "Закрыть обращение"}, {Id: "\\перевод", Text: "Переведи"}},
 			}
 
 			_, err := SendMessage(msg.LineId, msg.UserId, "Привет я демо бот который умеет следующее:", keyboard)
