@@ -72,5 +72,12 @@ func Receive(c *gin.Context) {
 
 	}
 
+	if msg.MessageType == messages.MESSAGE_TREATMENT_CLOSE {
+		_, err := HideKeyboard(msg.LineId, msg.UserId)
+		if err != nil {
+			logger.Warning("Get error while hide keyboard to line", msg.LineId, "for user", msg.UserId, "with error", err)
+		}
+	}
+
 	c.String(http.StatusOK, "")
 }
