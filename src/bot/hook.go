@@ -6,7 +6,6 @@ import (
 	"сonnect-companion/logger"
 )
 
-
 func InitHooks(app *gin.Engine, lines []uuid.UUID) {
 	logger.Info("Init receiving endpoint...")
 

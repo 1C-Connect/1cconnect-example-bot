@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
 	"os"
 	"strings"
+
 	"сonnect-companion/bot/requests"
 	"сonnect-companion/logger"
+
+	"github.com/google/uuid"
 )
 
 var (

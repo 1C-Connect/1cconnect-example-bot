@@ -18,13 +18,13 @@ type (
 	}
 
 	Server struct {
-		Host string `yaml:"host"`
+		Host   string `yaml:"host"`
 		Listen string `yaml:"listen"`
 	}
 
 	Connect struct {
-		Server string `yaml:"server"`
-		Login string `yaml:"login"`
+		Server   string `yaml:"server"`
+		Login    string `yaml:"login"`
 		Password string `yaml:"password"`
 	}
 )

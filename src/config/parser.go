@@ -1,13 +1,15 @@
 package config
 
 import (
-	"gopkg.in/yaml.v2"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+
 	"сonnect-companion/logger"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Parser interface {
