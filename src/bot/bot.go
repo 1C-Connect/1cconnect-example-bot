@@ -31,7 +31,8 @@ func Receive(c *gin.Context) {
 	}
 
 	go func(msg messages.Message) {
-		if msg.MessageType == messages.MESSAGE_TEXT {
+		switch msg.MessageType {
+		case messages.MESSAGE_TEXT:
 			switch strings.ToLower(msg.Text) {
 			case "здрасти!", "\\привет":
 				keyboard := &[][]requests.KeyboardKey{
@@ -72,10 +73,7 @@ func Receive(c *gin.Context) {
 					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
 				}
 			}
-
-		}
-
-		if msg.MessageType == messages.MESSAGE_TREATMENT_CLOSE {
+		case messages.MESSAGE_TREATMENT_CLOSE:
 			_, err := HideKeyboard(msg.LineId, msg.UserId)
 			if err != nil {
 				logger.Warning("Get error while hide keyboard to line", msg.LineId, "for user", msg.UserId, "with error", err)
