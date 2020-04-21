@@ -30,6 +30,8 @@ func Receive(c *gin.Context) {
 		return
 	}
 
+	logger.Debug("Receive message:", msg)
+
 	go func(msg messages.Message) {
 		switch msg.MessageType {
 		case messages.MESSAGE_TEXT:

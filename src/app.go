@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 	"сonnect-companion/bot"
+	"сonnect-companion/database"
 
 	"сonnect-companion/config"
 	"сonnect-companion/logger"
@@ -38,8 +39,10 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
+	db := database.Connect(cnf.Database)
+
 	app := gin.Default()
-	app.Use(config.Inject(cnf))
+	app.Use(config.Inject(cnf), database.Inject("db", db))
 
 	bot.Configure(cnf)
 	bot.InitHooks(app, cnf.Line)

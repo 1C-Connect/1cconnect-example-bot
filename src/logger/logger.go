@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 )
@@ -26,6 +28,18 @@ func Warning(v ...interface{}) {
 
 func Debug(v ...interface{}) {
 	if isDebug {
-		log.Print("[DEBUG] ", fmt.Sprintln(v...))
+		message := new(bytes.Buffer)
+
+		for _, str := range v {
+			v, ok := str.(string)
+			if ok {
+				_, _ = fmt.Fprintf(message, "%s ", v)
+			} else {
+				s, _ := json.MarshalIndent(str, "", " ")
+				_, _ = fmt.Fprintf(message, "%s ", string(s))
+			}
+		}
+
+		log.Print("[DEBUG] ", message)
 	}
 }

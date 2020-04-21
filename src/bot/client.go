@@ -3,6 +3,7 @@ package bot
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
@@ -22,48 +23,32 @@ var (
 
 type (
 	HttpError struct {
+		Url     string
 		Code    int
 		Message string
 	}
 )
 
 func (e *HttpError) Error() string {
-	return ""
+	return fmt.Sprintf("Http request failed for %s with code %d and message:\n%s", e.Url, e.Code, e.Message)
 }
 
 func setHook(lineId uuid.UUID) (content []byte, err error) {
-	reqUrl := cnf.Connect.Server + "/v1/hook/"
-
-	connectHookUrl := cnf.Server.Host + "/connect-push/receive/"
 	data := requests.HookSetupRequest{
 		Id:   lineId,
 		Type: "bot",
-		Url:  connectHookUrl,
+		Url:  cnf.Server.Host + "/connect-push/receive/",
 	}
 	jsonData, err := json.Marshal(data)
 
-	req, err := http.NewRequest("POST", reqUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		logger.Warning("Error while setup hook", err)
-	}
-
-	return invoke(req, "application/json")
+	return invoke("POST", "/hook/", "application/json", jsonData)
 }
 
 func deleteHook(lineId uuid.UUID) (content []byte, err error) {
-	reqUrl := cnf.Connect.Server + "/v1/hook/bot/" + lineId.String() + "/"
-
-	req, err := http.NewRequest("DELETE", reqUrl, nil)
-	if err != nil {
-		logger.Warning("Error while destroy hook", err)
-	}
-
-	return invoke(req, "application/json")
+	return invoke("DELETE", "/hook/bot/"+lineId.String()+"/", "application/json", nil)
 }
 
 func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
-	reqUrl := cnf.Connect.Server + "/v1/line/send/message/"
-
 	data := requests.MessageRequest{
 		LineID:   lineId,
 		UserId:   userId,
@@ -73,17 +58,10 @@ func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]
 
 	jsonData, err := json.Marshal(data)
 
-	req, err := http.NewRequest("POST", reqUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		logger.Warning("Error while send message", err)
-	}
-
-	return invoke(req, "application/json")
+	return invoke("POST", "/line/send/message/", "application/json", jsonData)
 }
 
 func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
-	reqUrl := cnf.Connect.Server + "/v1/line/send/file/"
-
 	data := requests.FileRequest{
 		LineID:   lineId,
 		UserId:   userId,
@@ -130,17 +108,10 @@ func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath stri
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", reqUrl, body)
-	if err != nil {
-		logger.Warning("Error while send message with file", err)
-	}
-
-	return invoke(req, writer.FormDataContentType())
+	return invoke("POST", "/line/send/file/", writer.FormDataContentType(), jsonData)
 }
 
 func HideKeyboard(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error) {
-	reqUrl := cnf.Connect.Server + "/v1/line/drop/keyboard/"
-
 	data := requests.DropKeyboardRequest{
 		LineID: lineId,
 		UserId: userId,
@@ -148,17 +119,10 @@ func HideKeyboard(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error
 
 	jsonData, err := json.Marshal(data)
 
-	req, err := http.NewRequest("POST", reqUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		logger.Warning("Error while drop keyboard", err)
-	}
-
-	return invoke(req, "application/json")
+	return invoke("POST", "/line/drop/keyboard/", "application/json", jsonData)
 }
 
 func CloseTreatment(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error) {
-	reqUrl := cnf.Connect.Server + "/v1/line/drop/treatment/"
-
 	data := requests.TreatmentRequest{
 		LineID: lineId,
 		UserId: userId,
@@ -166,17 +130,10 @@ func CloseTreatment(lineId uuid.UUID, userId uuid.UUID) (content []byte, err err
 
 	jsonData, err := json.Marshal(data)
 
-	req, err := http.NewRequest("POST", reqUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		logger.Warning("Error while drop keyboard", err)
-	}
-
-	return invoke(req, "application/json")
+	return invoke("POST", "/line/drop/treatment/", "application/json", jsonData)
 }
 
 func RerouteTreatment(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error) {
-	reqUrl := cnf.Connect.Server + "/v1/line/appoint/start/"
-
 	data := requests.TreatmentRequest{
 		LineID: lineId,
 		UserId: userId,
@@ -184,17 +141,10 @@ func RerouteTreatment(lineId uuid.UUID, userId uuid.UUID) (content []byte, err e
 
 	jsonData, err := json.Marshal(data)
 
-	req, err := http.NewRequest("POST", reqUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		logger.Warning("Error while drop keyboard", err)
-	}
-
-	return invoke(req, "application/json")
+	return invoke("POST", "/line/appoint/start/", "application/json", jsonData)
 }
 
 func RerouteTreatmentToSpec(lineId uuid.UUID, userId uuid.UUID, specId uuid.UUID) (content []byte, err error) {
-	reqUrl := cnf.Connect.Server + "/v1/line/appoint/spec/"
-
 	data := requests.TreatmentWithSpecRequest{
 		LineID: lineId,
 		UserId: userId,
@@ -203,17 +153,22 @@ func RerouteTreatmentToSpec(lineId uuid.UUID, userId uuid.UUID, specId uuid.UUID
 
 	jsonData, err := json.Marshal(data)
 
-	req, err := http.NewRequest("POST", reqUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		logger.Warning("Error while drop keyboard", err)
-	}
-
-	return invoke(req, "application/json")
+	return invoke("POST", "/line/appoint/spec/", "application/json", jsonData)
 }
 
-func invoke(req *http.Request, contentType string) (content []byte, err error) {
+func invoke(method string, methodUrl string, contentType string, body []byte) (content []byte, err error) {
+	methodUrl = strings.Trim(methodUrl, "/")
+	reqUrl := cnf.Connect.Server + "/v1/" + methodUrl + "/"
+
+	req, err := http.NewRequest(method, reqUrl, bytes.NewBuffer(body))
+	if err != nil {
+		logger.Warning("Error while create request for", reqUrl, "with method", method, ":", err)
+	}
+
 	req.SetBasicAuth(cnf.Connect.Login, cnf.Connect.Password)
 	req.Header.Set("Content-Type", contentType)
+
+	logger.Debug("---> request", req.Method, reqUrl)
 
 	resp, err := client.Do(req)
 
@@ -222,12 +177,14 @@ func invoke(req *http.Request, contentType string) (content []byte, err error) {
 	} else {
 		defer resp.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		logger.Debug("<--- request", req.Method, reqUrl, "with body", bodyBytes)
 		if err != nil {
 			logger.Warning("Error while read response body", err)
 		}
 
 		if resp.StatusCode != http.StatusOK {
 			return nil, &HttpError{
+				Url:     req.URL.String(),
 				Code:    resp.StatusCode,
 				Message: string(bodyBytes),
 			}
@@ -235,10 +192,4 @@ func invoke(req *http.Request, contentType string) (content []byte, err error) {
 
 		return bodyBytes, nil
 	}
-}
-
-var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
-
-func escapeQuotes(s string) string {
-	return quoteEscaper.Replace(s)
 }

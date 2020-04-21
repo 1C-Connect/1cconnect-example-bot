@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"сonnect-companion/database"
 )
 
 type (
@@ -10,7 +11,8 @@ type (
 	Conf struct {
 		RunInDebug bool
 
-		Server Server `yaml:"server"`
+		Server   Server         `yaml:"server"`
+		Database database.Redis `yaml:"database"`
 
 		Connect Connect `yaml:"connect"`
 

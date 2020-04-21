@@ -2,6 +2,10 @@ server:
   host: http://127.0.0.1:9001
   listen: 127.0.0.1:9001
 
+databse:
+  addr: 127.0.0.1:6379
+  password: ""
+
 connect:
   server: https://push.1c-connect.com
   login: parther
