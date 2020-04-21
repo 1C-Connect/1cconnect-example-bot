@@ -108,6 +108,15 @@ func changeState(c *gin.Context, msg *messages.Message, chatState *database.Chat
 	return nil
 }
 
+func checkErrorForSend(msg *messages.Message, err error, nextState database.ChatState) (database.ChatState, error) {
+	if err != nil {
+		logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
+		return database.STATE_GREETINGS, err
+	}
+
+	return nextState, nil
+}
+
 func processMessage(msg *messages.Message, chatState *database.Chat) (database.ChatState, error) {
 	switch msg.MessageType {
 	case messages.MESSAGE_TREATMENT_CLOSE,
@@ -116,12 +125,8 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 		messages.MESSAGE_TREATMENT_CLOSE_DEL_SUBS,
 		messages.MESSAGE_TREATMENT_CLOSE_DEL_USER:
 		_, err := HideKeyboard(msg.LineId, msg.UserId)
-		if err != nil {
-			logger.Warning("Get error while hide keyboardParting to line", msg.LineId, "for user", msg.UserId, "with error", err)
-			return database.STATE_GREETINGS, err
-		}
 
-		return database.STATE_GREETINGS, nil
+		return checkErrorForSend(msg, err, database.STATE_GREETINGS)
 	case messages.MESSAGE_TEXT:
 		keyboardMain := &[][]requests.KeyboardKey{
 			{{Id: "1", Text: "Памятка сотрудника"}},
@@ -138,91 +143,57 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 		switch chatState.CurrentState {
 		case database.STATE_DUMMY, database.STATE_GREETINGS:
 			_, err := SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_GREETING, keyboardMain)
-			if err != nil {
-				logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-				return database.STATE_GREETINGS, err
-			}
 
-			return database.STATE_MAIN_MENU, nil
+			return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
 		case database.STATE_MAIN_MENU:
 			comment := BOT_PHRASE_OK
 			switch strings.ToLower(msg.Text) {
 			case "1", "Памятка сотрудника":
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Памятка сотрудника.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Памятка сотрудника.pdf", filePath, &comment, keyboardParting)
-				if err != nil {
-					logger.Warning("Get error while send file to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_PARTING, nil
+
+				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			case "2", "Положение о персонале":
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Положение о персонале.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Положение о персонале.pdf", filePath, &comment, keyboardParting)
-				if err != nil {
-					logger.Warning("Get error while send file to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_PARTING, nil
+
+				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			case "3", "Регламент о пожеланиях":
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Регламент.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Регламент.pdf", filePath, &comment, keyboardParting)
-				if err != nil {
-					logger.Warning("Get error while send file to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_PARTING, nil
+
+				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			case "9", "Закрыть обращение":
 				_, err := CloseTreatment(msg.LineId, msg.UserId)
-				if err != nil {
-					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_GREETINGS, nil
+
+				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
 			case "0", "Перевести на специалиста":
 				_, err := RerouteTreatment(msg.LineId, msg.UserId)
-				if err != nil {
-					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_GREETINGS, nil
+
+				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
 			default:
 				_, err := SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_SORRY, keyboardMain)
-				if err != nil {
-					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_MAIN_MENU, nil
+
+				return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
 			}
 		case database.STATE_PARTING:
 			switch strings.ToLower(msg.Text) {
 			case "1", "Да":
 				_, err := SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_GREETING, keyboardMain)
-				if err != nil {
-					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_MAIN_MENU, nil
+
+				return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
 			case "2", "Нет":
 				_, err := CloseTreatment(msg.LineId, msg.UserId)
-				if err != nil {
-					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_GREETINGS, nil
+
+				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
 			case "0", "Перевести на специалиста":
 				_, err := RerouteTreatment(msg.LineId, msg.UserId)
-				if err != nil {
-					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_GREETINGS, nil
+
+				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
 			default:
 				_, err := SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_SORRY, keyboardParting)
-				if err != nil {
-					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-					return database.STATE_GREETINGS, err
-				}
-				return database.STATE_PARTING, nil
+
+				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			}
 		}
 	}
