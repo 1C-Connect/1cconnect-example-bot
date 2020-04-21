@@ -14,7 +14,7 @@ type (
 
 const (
 	PREFIX_STATE = "demo_bot:chat_state:"
-	EXPIRE       = 7776000
+	EXPIRE       = 30 * 24 * 60 * 60
 )
 
 func Connect(d Redis) *redis.Client {
