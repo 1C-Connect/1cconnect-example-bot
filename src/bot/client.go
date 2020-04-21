@@ -66,6 +66,7 @@ func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath stri
 		LineID:   lineId,
 		UserId:   userId,
 		FileName: fileName,
+		Comment:  comment,
 		Keyboard: keyboard,
 	}
 
