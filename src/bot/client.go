@@ -108,7 +108,7 @@ func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath stri
 		return nil, err
 	}
 
-	return invoke("POST", "/line/send/file/", writer.FormDataContentType(), jsonData)
+	return invoke("POST", "/line/send/file/", writer.FormDataContentType(), body.Bytes())
 }
 
 func HideKeyboard(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error) {
