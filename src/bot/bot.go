@@ -38,7 +38,7 @@ func Receive(c *gin.Context) {
 			switch strings.ToLower(msg.Text) {
 			case "здрасти!", "1", "1)":
 				keyboard := &[][]requests.KeyboardKey{
-					{{Id: "\\назад", Text: "Назад"}},
+					{{Id: "b", Text: "Назад"}},
 				}
 
 				_, err := SendMessage(msg.LineId, msg.UserId, "Хохо печениги на месте!", keyboard)
@@ -47,7 +47,7 @@ func Receive(c *gin.Context) {
 				}
 			case "кинь файлом", "2", "2)":
 				keyboard := &[][]requests.KeyboardKey{
-					{{Id: "\\назад", Text: "Назад"}},
+					{{Id: "b", Text: "Назад"}},
 				}
 				filePath, _ := filepath.Abs("build/image.jpg")
 				_, err := SendFile(msg.LineId, msg.UserId, "Мальчик.jpg", filePath, keyboard)
