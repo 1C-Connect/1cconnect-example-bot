@@ -9,14 +9,15 @@ import (
 type (
 	// configuration contains the application settings
 	Conf struct {
-		RunInDebug bool
+		RunInDebug bool `yaml:"debug"`
 
 		Server   Server         `yaml:"server"`
 		Database database.Redis `yaml:"database"`
 
 		Connect Connect `yaml:"connect"`
 
-		Line []uuid.UUID `yaml:"line"`
+		FilesDir string      `yaml:"files_dir"`
+		Line     []uuid.UUID `yaml:"line"`
 	}
 
 	Server struct {

@@ -1,8 +1,10 @@
+debug: false
+
 server:
   host: http://127.0.0.1:9001
   listen: 127.0.0.1:9001
 
-databse:
+database:
   addr: 127.0.0.1:6379
   password: ""
 
@@ -10,6 +12,8 @@ connect:
   server: https://push.1c-connect.com
   login: parther
   password: password
+
+files_dir: ./
 
 line:
   - db13946a-2556-11ea-a699-3a6eaf2a5dcf

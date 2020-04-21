@@ -19,6 +19,7 @@ type (
 		LineID   uuid.UUID        `json:"line_id" format:"uuid" example:"bb296731-3d58-4c4a-8227-315bdc2bf3ff"`
 		UserId   uuid.UUID        `json:"user_id" format:"uuid" example:"bb296731-3d58-4c4a-8227-315bdc2bf3ff"`
 		FileName string           `json:"file_name" example:"text.pdf"`
+		Comment  *string          `json:"comment" binding:"omitempty" example:"Держи краба!"`
 		Keyboard *[][]KeyboardKey `json:"keyboard"`
 	}
 )

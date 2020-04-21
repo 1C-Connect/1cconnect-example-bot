@@ -21,14 +21,16 @@ var (
 	cnf = &config.Conf{}
 
 	configFile = flag.String("config", "", "Usage: -config=<config_file>")
+	filesDir   = flag.String("files", "./", "Usage: -files=<path_to_files_dir>")
 	debug      = flag.Bool("debug", false, "Print debug information on stderr")
 )
 
 func main() {
 	flag.Parse()
 
-	config.GetConfig(*configFile, cnf)
 	cnf.RunInDebug = *debug
+	cnf.FilesDir = *filesDir
+	config.GetConfig(*configFile, cnf)
 
 	logger.InitLogger(*debug)
 	logger.Info("Application starting...")

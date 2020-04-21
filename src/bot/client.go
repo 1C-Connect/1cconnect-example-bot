@@ -61,7 +61,7 @@ func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]
 	return invoke("POST", "/line/send/message/", "application/json", jsonData)
 }
 
-func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
+func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath string, comment *string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
 	data := requests.FileRequest{
 		LineID:   lineId,
 		UserId:   userId,
