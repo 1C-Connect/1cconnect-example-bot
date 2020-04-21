@@ -148,26 +148,26 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 		case database.STATE_MAIN_MENU:
 			comment := BOT_PHRASE_OK
 			switch strings.ToLower(msg.Text) {
-			case "1", "Памятка сотрудника":
+			case "1", "памятка сотрудника":
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Памятка сотрудника.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Памятка сотрудника.pdf", filePath, &comment, keyboardParting)
 
 				return checkErrorForSend(msg, err, database.STATE_PARTING)
-			case "2", "Положение о персонале":
+			case "2", "положение о персонале":
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Положение о персонале.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Положение о персонале.pdf", filePath, &comment, keyboardParting)
 
 				return checkErrorForSend(msg, err, database.STATE_PARTING)
-			case "3", "Регламент о пожеланиях":
+			case "3", "регламент о пожеланиях":
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Регламент.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Регламент.pdf", filePath, &comment, keyboardParting)
 
 				return checkErrorForSend(msg, err, database.STATE_PARTING)
-			case "9", "Закрыть обращение":
+			case "9", "закрыть обращение":
 				_, err := CloseTreatment(msg.LineId, msg.UserId)
 
 				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
-			case "0", "Перевести на специалиста":
+			case "0", "перевести на специалиста":
 				_, err := RerouteTreatment(msg.LineId, msg.UserId)
 
 				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
@@ -178,15 +178,15 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 			}
 		case database.STATE_PARTING:
 			switch strings.ToLower(msg.Text) {
-			case "1", "Да":
+			case "1", "да":
 				_, err := SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_GREETING, keyboardMain)
 
 				return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
-			case "2", "Нет":
+			case "2", "нет":
 				_, err := CloseTreatment(msg.LineId, msg.UserId)
 
 				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
-			case "0", "Перевести на специалиста":
+			case "0", "перевести на специалиста":
 				_, err := RerouteTreatment(msg.LineId, msg.UserId)
 
 				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
