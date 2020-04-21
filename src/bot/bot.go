@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
-	"time"
 	"сonnect-companion/database"
 
 	"сonnect-companion/bot/messages"
@@ -100,7 +99,7 @@ func changeState(c *gin.Context, msg *messages.Message, chatState *database.Chat
 
 	dbStateKey := database.PREFIX_STATE + msg.UserId.String() + ":" + msg.LineId.String()
 
-	result, err := db.Set(dbStateKey, data, database.EXPIRE*time.Second).Result()
+	result, err := db.Set(dbStateKey, data, database.EXPIRE).Result()
 	logger.Debug("Write state to db result", result)
 	if err != nil {
 		logger.Warning("Error while write state to db", err)

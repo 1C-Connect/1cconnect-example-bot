@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
+	"time"
 )
 
 type (
@@ -14,7 +15,7 @@ type (
 
 const (
 	PREFIX_STATE = "demo_bot:chat_state:"
-	EXPIRE       = 30 * 24 * 60 * 60
+	EXPIRE       = 30 * 24 * time.Hour
 )
 
 func Connect(d Redis) *redis.Client {
