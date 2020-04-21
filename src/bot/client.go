@@ -3,7 +3,6 @@ package bot
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
@@ -32,10 +31,10 @@ func (e *HttpError) Error() string {
 	return ""
 }
 
-func setHook(lineId *uuid.UUID) (content []byte, err error) {
-	reqUrl := fmt.Sprintf("%s/v1/hook/", cnf.Connect.Server)
+func setHook(lineId uuid.UUID) (content []byte, err error) {
+	reqUrl := cnf.Connect.Server + "/v1/hook/"
 
-	connectHookUrl := fmt.Sprintf("%s/connect-push/receive/", cnf.Server.Host)
+	connectHookUrl := cnf.Server.Host + "/connect-push/receive/"
 	data := requests.HookSetupRequest{
 		Id:   lineId,
 		Type: "bot",
@@ -51,8 +50,8 @@ func setHook(lineId *uuid.UUID) (content []byte, err error) {
 	return invoke(req, "application/json")
 }
 
-func deleteHook(lineId *uuid.UUID) (content []byte, err error) {
-	reqUrl := fmt.Sprintf("%s/v1/hook/%s/%s/", cnf.Connect.Server, "bot", lineId)
+func deleteHook(lineId uuid.UUID) (content []byte, err error) {
+	reqUrl := cnf.Connect.Server + "/v1/hook/bot/" + lineId.String() + "/"
 
 	req, err := http.NewRequest("DELETE", reqUrl, nil)
 	if err != nil {
@@ -63,7 +62,7 @@ func deleteHook(lineId *uuid.UUID) (content []byte, err error) {
 }
 
 func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
-	reqUrl := fmt.Sprintf("%s/v1/line/send/message/", cnf.Connect.Server)
+	reqUrl := cnf.Connect.Server + "/v1/line/send/message/"
 
 	data := requests.MessageRequest{
 		LineID:   lineId,
@@ -83,7 +82,7 @@ func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]
 }
 
 func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
-	reqUrl := fmt.Sprintf("%s/v1/line/send/file/", cnf.Connect.Server)
+	reqUrl := cnf.Connect.Server + "/v1/line/send/file/"
 
 	data := requests.FileRequest{
 		LineID:   lineId,
@@ -98,7 +97,7 @@ func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath stri
 	writer := multipart.NewWriter(body)
 
 	metaPartHeader := textproto.MIMEHeader{}
-	metaPartHeader.Set("Content-Disposition", fmt.Sprintf(`form-data; name="meta"`))
+	metaPartHeader.Set("Content-Disposition", `form-data; name="meta"`)
 	metaPartHeader.Set("Content-Type", "application/json")
 	metaPart, err := writer.CreatePart(metaPartHeader)
 	if err != nil {
@@ -140,7 +139,7 @@ func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath stri
 }
 
 func HideKeyboard(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error) {
-	reqUrl := fmt.Sprintf("%s/v1/line/drop/keyboard/", cnf.Connect.Server)
+	reqUrl := cnf.Connect.Server + "/v1/line/drop/keyboard/"
 
 	data := requests.DropKeyboardRequest{
 		LineID: lineId,
@@ -158,7 +157,7 @@ func HideKeyboard(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error
 }
 
 func CloseTreatment(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error) {
-	reqUrl := fmt.Sprintf("%s/v1/line/drop/treatment/", cnf.Connect.Server)
+	reqUrl := cnf.Connect.Server + "/v1/line/drop/treatment/"
 
 	data := requests.TreatmentRequest{
 		LineID: lineId,
@@ -176,7 +175,7 @@ func CloseTreatment(lineId uuid.UUID, userId uuid.UUID) (content []byte, err err
 }
 
 func RerouteTreatment(lineId uuid.UUID, userId uuid.UUID) (content []byte, err error) {
-	reqUrl := fmt.Sprintf("%s/v1/line/appoint/start/", cnf.Connect.Server)
+	reqUrl := cnf.Connect.Server + "/v1/line/appoint/start/"
 
 	data := requests.TreatmentRequest{
 		LineID: lineId,
@@ -194,7 +193,7 @@ func RerouteTreatment(lineId uuid.UUID, userId uuid.UUID) (content []byte, err e
 }
 
 func RerouteTreatmentToSpec(lineId uuid.UUID, userId uuid.UUID, specId uuid.UUID) (content []byte, err error) {
-	reqUrl := fmt.Sprintf("%s/v1/line/appoint/spec/", cnf.Connect.Server)
+	reqUrl := cnf.Connect.Server + "/v1/line/appoint/spec/"
 
 	data := requests.TreatmentWithSpecRequest{
 		LineID: lineId,
