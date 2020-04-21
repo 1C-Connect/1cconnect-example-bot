@@ -73,7 +73,11 @@ func Receive(c *gin.Context) {
 					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
 				}
 			}
-		case messages.MESSAGE_TREATMENT_CLOSE:
+		case messages.MESSAGE_TREATMENT_CLOSE,
+			messages.MESSAGE_TREATMENT_CLOSE_ACTIVE,
+			messages.MESSAGE_TREATMENT_CLOSE_DEL_LINE,
+			messages.MESSAGE_TREATMENT_CLOSE_DEL_SUBS,
+			messages.MESSAGE_TREATMENT_CLOSE_DEL_USER:
 			_, err := HideKeyboard(msg.LineId, msg.UserId)
 			if err != nil {
 				logger.Warning("Get error while hide keyboard to line", msg.LineId, "for user", msg.UserId, "with error", err)
