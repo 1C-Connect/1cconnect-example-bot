@@ -34,7 +34,7 @@ func Receive(c *gin.Context) {
 		switch msg.MessageType {
 		case messages.MESSAGE_TEXT:
 			switch strings.ToLower(msg.Text) {
-			case "здрасти!", "\\привет":
+			case "здрасти!", "1", "1)":
 				keyboard := &[][]requests.KeyboardKey{
 					{{Id: "\\назад", Text: "Назад"}},
 				}
@@ -43,7 +43,7 @@ func Receive(c *gin.Context) {
 				if err != nil {
 					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
 				}
-			case "кинь файлом", "\\файл":
+			case "кинь файлом", "2", "2)":
 				keyboard := &[][]requests.KeyboardKey{
 					{{Id: "\\назад", Text: "Назад"}},
 				}
@@ -52,20 +52,20 @@ func Receive(c *gin.Context) {
 				if err != nil {
 					logger.Warning("Get error while send file to line", msg.LineId, "for user", msg.UserId, "with error", err)
 				}
-			case "закрыть обращение", "\\закрыть":
+			case "закрыть обращение", "3", "3)":
 				_, err := CloseTreatment(msg.LineId, msg.UserId)
 				if err != nil {
 					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
 				}
-			case "переведи", "\\перевод":
+			case "переведи", "4", "4)":
 				_, err := RerouteTreatment(msg.LineId, msg.UserId)
 				if err != nil {
 					logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
 				}
 			default:
 				keyboard := &[][]requests.KeyboardKey{
-					{{Id: "\\привет", Text: "Здрасти!"}, {Id: "\\файл", Text: "Кинь файлом"}},
-					{{Id: "\\закрыть", Text: "Закрыть обращение"}, {Id: "\\перевод", Text: "Переведи"}},
+					{{Id: "1", Text: "Здрасти!"}, {Id: "2", Text: "Кинь файлом"}},
+					{{Id: "3", Text: "Закрыть обращение"}, {Id: "4", Text: "Переведи"}},
 				}
 
 				_, err := SendMessage(msg.LineId, msg.UserId, "Привет я демо бот который умеет следующее:", keyboard)
