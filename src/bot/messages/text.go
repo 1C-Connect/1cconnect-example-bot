@@ -5,8 +5,10 @@ import "github.com/google/uuid"
 type MessageType int
 
 const (
-	MESSAGE_TEXT            MessageType = 1
-	MESSAGE_TREATMENT_CLOSE MessageType = 82
+	MESSAGE_TEXT                    MessageType = 1
+	MESSAGE_TREATMENT_START_BY_USER MessageType = 80
+	MESSAGE_TREATMENT_START_BY_SPEC MessageType = 81
+	MESSAGE_TREATMENT_CLOSE         MessageType = 82
 
 	MESSAGE_TREATMENT_CLOSE_ACTIVE   MessageType = 90
 	MESSAGE_TREATMENT_CLOSE_DEL_LINE MessageType = 91

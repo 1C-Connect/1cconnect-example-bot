@@ -24,6 +24,8 @@ const (
 	BOT_PHRASE_FILE_SENDING = "Сейчас пришлю соотвествующий файл, подождите."
 	BOT_PHRASE_FILE_SENDED  = "Вот, пожалуйста."
 	BOT_PHRASE_AGAIN        = "Могу ли я чем-то помоч еще?"
+	BOT_PHRASE_RETOUTING    = "Сейчас переведу, секундочку."
+	BOT_PHRASE_BYE          = "Спасибо за обращение!"
 )
 
 var (
@@ -122,7 +124,9 @@ func checkErrorForSend(msg *messages.Message, err error, nextState database.Chat
 
 func processMessage(msg *messages.Message, chatState *database.Chat) (database.ChatState, error) {
 	switch msg.MessageType {
-	case messages.MESSAGE_TREATMENT_CLOSE,
+	case messages.MESSAGE_TREATMENT_START_BY_USER,
+		messages.MESSAGE_TREATMENT_START_BY_SPEC,
+		messages.MESSAGE_TREATMENT_CLOSE,
 		messages.MESSAGE_TREATMENT_CLOSE_ACTIVE,
 		messages.MESSAGE_TREATMENT_CLOSE_DEL_LINE,
 		messages.MESSAGE_TREATMENT_CLOSE_DEL_SUBS,
@@ -185,10 +189,14 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 
 				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			case "9", "закрыть обращение":
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_BYE, nil)
+
 				_, err := CloseTreatment(msg.LineId, msg.UserId)
 
 				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
 			case "0", "перевести на специалиста":
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_RETOUTING, nil)
+
 				_, err := RerouteTreatment(msg.LineId, msg.UserId)
 
 				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
@@ -204,10 +212,18 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 
 				return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
 			case "2", "нет":
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_BYE, nil)
+
+				time.Sleep(500 * time.Millisecond)
+
 				_, err := CloseTreatment(msg.LineId, msg.UserId)
 
 				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
 			case "0", "перевести на специалиста":
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_RETOUTING, nil)
+
+				time.Sleep(500 * time.Millisecond)
+
 				_, err := RerouteTreatment(msg.LineId, msg.UserId)
 
 				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
