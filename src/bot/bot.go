@@ -124,8 +124,7 @@ func checkErrorForSend(msg *messages.Message, err error, nextState database.Chat
 
 func processMessage(msg *messages.Message, chatState *database.Chat) (database.ChatState, error) {
 	switch msg.MessageType {
-	case messages.MESSAGE_TREATMENT_START_BY_USER,
-		messages.MESSAGE_TREATMENT_START_BY_SPEC,
+	case messages.MESSAGE_TREATMENT_START_BY_SPEC,
 		messages.MESSAGE_TREATMENT_CLOSE,
 		messages.MESSAGE_TREATMENT_CLOSE_ACTIVE,
 		messages.MESSAGE_TREATMENT_CLOSE_DEL_LINE,
