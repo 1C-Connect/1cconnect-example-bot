@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 	"сonnect-companion/database"
 
 	"сonnect-companion/bot/messages"
@@ -18,9 +19,11 @@ import (
 )
 
 const (
-	BOT_PHRASE_GREETING = "Выберите, какая информация вас интересует:"
-	BOT_PHRASE_SORRY    = "Извините, но я вас не понимаю. Выберите, пожалуйста, один из вариантов:"
-	BOT_PHRASE_OK       = "Вот. пожалуйста"
+	BOT_PHRASE_GREETING     = "Выберите, какая информация вас интересует:"
+	BOT_PHRASE_SORRY        = "Извините, но я вас не понимаю. Выберите, пожалуйста, один из вариантов:"
+	BOT_PHRASE_FILE_SENDING = "Сейчас пришлю соотвествующий файл, подождите."
+	BOT_PHRASE_FILE_SENDED  = "Вот, пожалуйста."
+	BOT_PHRASE_AGAIN        = "Могу ли я чем-то помоч еще?"
 )
 
 var (
@@ -146,21 +149,39 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 
 			return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
 		case database.STATE_MAIN_MENU:
-			comment := BOT_PHRASE_OK
+			comment := BOT_PHRASE_FILE_SENDED
 			switch strings.ToLower(msg.Text) {
 			case "1", "памятка сотрудника":
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
+
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Памятка сотрудника.pdf"))
-				_, err := SendFile(msg.LineId, msg.UserId, "Памятка сотрудника.pdf", filePath, &comment, keyboardParting)
+				_, err := SendFile(msg.LineId, msg.UserId, "Памятка сотрудника.pdf", filePath, &comment, nil)
+
+				time.Sleep(1 * time.Second)
+
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
 
 				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			case "2", "положение о персонале":
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
+
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Положение о персонале.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Положение о персонале.pdf", filePath, &comment, keyboardParting)
 
+				time.Sleep(1 * time.Second)
+
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
+
 				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			case "3", "регламент о пожеланиях":
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
+
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Регламент.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Регламент.pdf", filePath, &comment, keyboardParting)
+
+				time.Sleep(1 * time.Second)
+
+				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
 
 				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			case "9", "закрыть обращение":
