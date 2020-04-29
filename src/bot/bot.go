@@ -3,19 +3,19 @@ package bot
 import (
 	"encoding/json"
 	"errors"
-	"github.com/go-redis/redis/v7"
 	"net/http"
 	"path/filepath"
 	"strings"
 	"time"
-	"сonnect-companion/database"
 
 	"сonnect-companion/bot/messages"
 	"сonnect-companion/bot/requests"
 	"сonnect-companion/config"
+	"сonnect-companion/database"
 	"сonnect-companion/logger"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v7"
 )
 
 const (
@@ -47,7 +47,8 @@ func Receive(c *gin.Context) {
 
 	logger.Debug("Receive message:", msg)
 
-	go func(msg messages.Message) {
+	cCp := c.Copy()
+	go func(cCp *gin.Context, msg messages.Message) {
 		chatState := getState(c, &msg)
 
 		newState, err := processMessage(&msg, &chatState)
@@ -57,7 +58,7 @@ func Receive(c *gin.Context) {
 		if err != nil {
 
 		}
-	}(msg)
+	}(cCp, msg)
 
 	c.Status(http.StatusOK)
 }
