@@ -3,18 +3,19 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-	"сonnect-companion/bot"
-	"сonnect-companion/database"
 
-	"сonnect-companion/config"
-	"сonnect-companion/logger"
+	"connect-companion/bot"
+	"connect-companion/config"
+	"connect-companion/database"
+	"connect-companion/logger"
+
+	"github.com/gin-gonic/gin"
 )
 
 var (

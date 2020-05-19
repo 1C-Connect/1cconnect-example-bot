@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"сonnect-companion/bot/messages"
-	"сonnect-companion/bot/requests"
-	"сonnect-companion/config"
-	"сonnect-companion/database"
-	"сonnect-companion/logger"
+	"connect-companion/bot/messages"
+	"connect-companion/bot/requests"
+	"connect-companion/config"
+	"connect-companion/database"
+	"connect-companion/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
@@ -46,6 +46,12 @@ func Receive(c *gin.Context) {
 	}
 
 	logger.Debug("Receive message:", msg)
+
+	// Реагируем только на сообщения пользователя
+	if (msg.MessageType == messages.MESSAGE_TEXT || msg.MessageType == messages.MESSAGE_FILE) && msg.MessageAuthor != nil && msg.UserId != *msg.MessageAuthor {
+		c.Status(http.StatusOK)
+		return
+	}
 
 	cCp := c.Copy()
 	go func(cCp *gin.Context, msg messages.Message) {

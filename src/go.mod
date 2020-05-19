@@ -1,4 +1,4 @@
-module сonnect-companion
+module connect-companion
 
 go 1.14
 

@@ -6,6 +6,7 @@ type MessageType int
 
 const (
 	MESSAGE_TEXT                    MessageType = 1
+	MESSAGE_FILE                    MessageType = 70
 	MESSAGE_TREATMENT_START_BY_USER MessageType = 80
 	MESSAGE_TREATMENT_START_BY_SPEC MessageType = 81
 	MESSAGE_TREATMENT_CLOSE         MessageType = 82

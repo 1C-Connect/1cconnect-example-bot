@@ -1,9 +1,10 @@
 package bot
 
 import (
+	"connect-companion/logger"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"сonnect-companion/logger"
 )
 
 func InitHooks(app *gin.Engine, lines []uuid.UUID) {

@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"сonnect-companion/logger"
+	"connect-companion/logger"
 
 	"gopkg.in/yaml.v2"
 )

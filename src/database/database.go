@@ -1,9 +1,10 @@
 package database
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v7"
-	"time"
 )
 
 type (

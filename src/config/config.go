@@ -1,9 +1,10 @@
 package config
 
 import (
+	"connect-companion/database"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"сonnect-companion/database"
 )
 
 type (

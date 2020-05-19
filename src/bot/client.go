@@ -11,8 +11,8 @@ import (
 	"os"
 	"strings"
 
-	"сonnect-companion/bot/requests"
-	"сonnect-companion/logger"
+	"connect-companion/bot/requests"
+	"connect-companion/logger"
 
 	"github.com/google/uuid"
 )
