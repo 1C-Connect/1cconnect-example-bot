@@ -239,6 +239,11 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 				return checkErrorForSend(msg, err, database.STATE_PARTING)
 			}
 		}
+	case messages.MESSAGE_FILE:
+		_, err := HideKeyboard(msg.LineId, msg.UserId)
+		_, err = RerouteTreatment(msg.LineId, msg.UserId)
+
+		return checkErrorForSend(msg, err, database.STATE_GREETINGS)
 	}
 
 	return database.STATE_DUMMY, errors.New("I don't know hat i mus do!")
