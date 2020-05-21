@@ -1,0 +1,3 @@
+#!/bin/sh
+exec 2>&1
+exec chpst env GOMAXPROCS=1 bash -c "cd /opt/connect-companion && /opt/connect-companion/connect-companion -config=config/config.yaml -debug"

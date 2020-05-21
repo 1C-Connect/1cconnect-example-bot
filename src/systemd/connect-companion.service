@@ -1,0 +1,22 @@
+[Unit]
+Description=1C-Connect Demo Bot
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+; PermissionsStartOnly=yes
+Environment=HOME=/opt/connect-companion
+Environment=GOMAXPROCS=1
+WorkingDirectory=/opt/connect-companion
+; ExecStartPre=
+ExecStart=/opt/connect-companion/connect-companion -config=/opt/connect-companion/config/config.yml
+; ExecStop=
+; ExecReload=
+Restart=always
+RestartSec=5
+StartLimitInterval=500
+StartLimitBurst=100
+
+[Install]
+WantedBy=multi-user.target
