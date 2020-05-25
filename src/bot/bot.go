@@ -23,7 +23,7 @@ const (
 	BOT_PHRASE_SORRY        = "Извините, но я вас не понимаю. Выберите, пожалуйста, один из вариантов:"
 	BOT_PHRASE_FILE_SENDING = "Сейчас пришлю соотвествующий файл, подождите."
 	BOT_PHRASE_FILE_SENDED  = "Вот, пожалуйста."
-	BOT_PHRASE_AGAIN        = "Могу ли я чем-то помоч еще?"
+	BOT_PHRASE_AGAIN        = "Могу ли я чем-то помочь еще?"
 	BOT_PHRASE_RETOUTING    = "Сейчас переведу, секундочку."
 	BOT_PHRASE_BYE          = "Спасибо за обращение!"
 )
