@@ -58,11 +58,13 @@ func Receive(c *gin.Context) {
 		chatState := getState(c, &msg)
 
 		newState, err := processMessage(&msg, &chatState)
+		if err != nil {
+			logger.Warning("Error processMessage", err)
+		}
 
 		err = changeState(c, &msg, &chatState, newState)
-
 		if err != nil {
-
+			logger.Warning("Error changeState", err)
 		}
 	}(cCp, msg)
 
@@ -131,6 +133,8 @@ func checkErrorForSend(msg *messages.Message, err error, nextState database.Chat
 
 func processMessage(msg *messages.Message, chatState *database.Chat) (database.ChatState, error) {
 	switch msg.MessageType {
+	case messages.MESSAGE_TREATMENT_START_BY_USER:
+		return chatState.CurrentState, nil
 	case messages.MESSAGE_TREATMENT_START_BY_SPEC,
 		messages.MESSAGE_TREATMENT_CLOSE,
 		messages.MESSAGE_TREATMENT_CLOSE_ACTIVE,
