@@ -164,7 +164,7 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 			return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
 		case database.STATE_MAIN_MENU:
 			comment := BOT_PHRASE_FILE_SENDED
-			switch strings.ToLower(msg.Text) {
+			switch strings.ToLower(strings.TrimSpace(msg.Text)) {
 			case "1", "памятка сотрудника":
 				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
 
@@ -216,7 +216,7 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 				return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
 			}
 		case database.STATE_PARTING:
-			switch strings.ToLower(msg.Text) {
+			switch strings.ToLower(strings.TrimSpace(msg.Text)) {
 			case "1", "да":
 				_, err := SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_GREETING, keyboardMain)
 
