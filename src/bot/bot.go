@@ -180,7 +180,7 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
 
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Положение о персонале.pdf"))
-				_, err := SendFile(msg.LineId, msg.UserId, "Положение о персонале.pdf", filePath, &comment, keyboardParting)
+				_, err := SendFile(msg.LineId, msg.UserId, "Положение о персонале.pdf", filePath, &comment, nil)
 
 				time.Sleep(1 * time.Second)
 
@@ -191,7 +191,7 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
 
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Регламент.pdf"))
-				_, err := SendFile(msg.LineId, msg.UserId, "Регламент.pdf", filePath, &comment, keyboardParting)
+				_, err := SendFile(msg.LineId, msg.UserId, "Регламент.pdf", filePath, &comment, nil)
 
 				time.Sleep(1 * time.Second)
 
