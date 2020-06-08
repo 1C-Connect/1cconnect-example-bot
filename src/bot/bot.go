@@ -171,7 +171,7 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Памятка сотрудника.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Памятка сотрудника.pdf", filePath, &comment, nil)
 
-				time.Sleep(1 * time.Second)
+				time.Sleep(3 * time.Second)
 
 				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
 
@@ -182,7 +182,7 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Положение о персонале.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Положение о персонале.pdf", filePath, &comment, nil)
 
-				time.Sleep(1 * time.Second)
+				time.Sleep(3 * time.Second)
 
 				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
 
@@ -193,7 +193,7 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Регламент.pdf"))
 				_, err := SendFile(msg.LineId, msg.UserId, "Регламент.pdf", filePath, &comment, nil)
 
-				time.Sleep(1 * time.Second)
+				time.Sleep(3 * time.Second)
 
 				_, _ = SendMessage(msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
 
