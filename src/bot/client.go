@@ -61,7 +61,7 @@ func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]
 	return invoke("POST", "/line/send/message/", "application/json", jsonData)
 }
 
-func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath string, comment *string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
+func SendFile(isImage bool, lineId uuid.UUID, userId uuid.UUID, fileName string, filepath string, comment *string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
 	data := requests.FileRequest{
 		LineID:   lineId,
 		UserId:   userId,
@@ -109,6 +109,9 @@ func SendFile(lineId uuid.UUID, userId uuid.UUID, fileName string, filepath stri
 		return nil, err
 	}
 
+	if isImage {
+		return invoke("POST", "/line/send/image/", writer.FormDataContentType(), body.Bytes())
+	}
 	return invoke("POST", "/line/send/file/", writer.FormDataContentType(), body.Bytes())
 }
 

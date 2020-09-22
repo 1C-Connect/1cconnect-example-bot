@@ -22,7 +22,7 @@ var (
 	cnf = &config.Conf{}
 
 	configFile = flag.String("config", "", "Usage: -config=<config_file>")
-	filesDir   = flag.String("files", "./", "Usage: -files=<path_to_files_dir>")
+	filesDir   = flag.String("files", "./files", "Usage: -files=<path_to_files_dir>")
 	debug      = flag.Bool("debug", false, "Print debug information on stderr")
 )
 
