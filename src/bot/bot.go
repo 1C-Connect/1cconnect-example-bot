@@ -135,12 +135,11 @@ func processMessage(msg *messages.Message, chatState *database.Chat) (database.C
 	switch msg.MessageType {
 	case messages.MESSAGE_TREATMENT_START_BY_USER:
 		return chatState.CurrentState, nil
-	case messages.MESSAGE_TREATMENT_START_BY_SPEC,
+	case messages.MESSAGE_CALL_START_TREATMENT,
+		messages.MESSAGE_CALL_START_NO_TREATMENT,
+		messages.MESSAGE_TREATMENT_START_BY_SPEC,
 		messages.MESSAGE_TREATMENT_CLOSE,
-		messages.MESSAGE_TREATMENT_CLOSE_ACTIVE,
-		messages.MESSAGE_TREATMENT_CLOSE_DEL_LINE,
-		messages.MESSAGE_TREATMENT_CLOSE_DEL_SUBS,
-		messages.MESSAGE_TREATMENT_CLOSE_DEL_USER:
+		messages.MESSAGE_TREATMENT_CLOSE_ACTIVE:
 		_, err := HideKeyboard(msg.LineId, msg.UserId)
 
 		return checkErrorForSend(msg, err, database.STATE_GREETINGS)
