@@ -12,8 +12,10 @@ import (
 	"strings"
 
 	"connect-companion/bot/requests"
+	"connect-companion/config"
 	"connect-companion/logger"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
@@ -48,10 +50,13 @@ func deleteHook(lineId uuid.UUID) (content []byte, err error) {
 	return invoke("DELETE", "/hook/bot/"+lineId.String()+"/", "application/json", nil)
 }
 
-func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
+func SendMessage(c *gin.Context, lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
+	cnf := c.MustGet("cnf").(*config.Conf)
+
 	data := requests.MessageRequest{
 		LineID:   lineId,
 		UserId:   userId,
+		AuthorID: cnf.SpecID,
 		Text:     text,
 		Keyboard: keyboard,
 	}
@@ -61,10 +66,13 @@ func SendMessage(lineId uuid.UUID, userId uuid.UUID, text string, keyboard *[][]
 	return invoke("POST", "/line/send/message/", "application/json", jsonData)
 }
 
-func SendFile(isImage bool, lineId uuid.UUID, userId uuid.UUID, fileName string, filepath string, comment *string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
+func SendFile(c *gin.Context, isImage bool, lineId uuid.UUID, userId uuid.UUID, fileName string, filepath string, comment *string, keyboard *[][]requests.KeyboardKey) (content []byte, err error) {
+	cnf := c.MustGet("cnf").(*config.Conf)
+
 	data := requests.FileRequest{
 		LineID:   lineId,
 		UserId:   userId,
+		AuthorID: cnf.SpecID,
 		FileName: fileName,
 		Comment:  comment,
 		Keyboard: keyboard,
