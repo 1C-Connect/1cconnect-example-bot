@@ -18,6 +18,7 @@ type (
 		Connect Connect `yaml:"connect"`
 
 		FilesDir string      `yaml:"files_dir"`
+		SpecID   *uuid.UUID  `yaml:"spec_id"`
 		Line     []uuid.UUID `yaml:"line"`
 	}
 
