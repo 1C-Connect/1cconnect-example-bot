@@ -28,14 +28,6 @@ const (
 	BOT_PHRASE_BYE          = "Спасибо за обращение!"
 )
 
-var (
-	cnf = &config.Conf{}
-)
-
-func Configure(c *config.Conf) {
-	cnf = c
-}
-
 func Receive(c *gin.Context) {
 	var msg messages.Message
 	if err := c.BindJSON(&msg); err != nil {
@@ -123,6 +115,20 @@ func changeState(c *gin.Context, msg *messages.Message, chatState *database.Chat
 }
 
 func processMessage(c *gin.Context, msg *messages.Message, chatState *database.Chat) (database.ChatState, error) {
+	cnf := c.MustGet("cnf").(*config.Conf)
+
+	keyboardMain := &[][]requests.KeyboardKey{
+		{{Id: "1", Text: "Памятка сотрудника"}},
+		{{Id: "2", Text: "Положение о персонале"}},
+		{{Id: "3", Text: "Регламент о пожеланиях"}},
+		{{Id: "9", Text: "Закрыть обращение"}},
+		{{Id: "0", Text: "Перевести на специалиста"}},
+	}
+	keyboardParting := &[][]requests.KeyboardKey{
+		{{Id: "1", Text: "Да"}, {Id: "2", Text: "Нет"}},
+		{{Id: "0", Text: "Перевести на специалиста"}},
+	}
+
 	switch msg.MessageType {
 	case messages.MESSAGE_TREATMENT_START_BY_USER:
 		return chatState.CurrentState, nil
@@ -133,25 +139,28 @@ func processMessage(c *gin.Context, msg *messages.Message, chatState *database.C
 		messages.MESSAGE_TREATMENT_CLOSE_ACTIVE:
 
 		return msg.Start(database.STATE_GREETINGS)
+	case messages.MESSAGE_TREATMENT_TO_BOT:
+		// Спец перевел на бота. Смотрим куда именно
+		switch msg.Data.Redirect {
+		case "add_collegue,level:1":
+			// return msg.Send("Как добавить сотрудника в 1с-коннект?\n"+BOT_PHRASE_DEMO_0, database.STATE_DEMO_1, keyboardDemo1)
+			return msg.Send(c, BOT_PHRASE_GREETING, database.STATE_MAIN_MENU, keyboardMain)
+		case "add_collegue,level:3":
+			// filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "manage_spec.png"))
+			// return msg.SendFile(true, "manage_spec.png", filePath, BOT_PHRASE_DEMO_2, database.STATE_DEMO_3, keyboardDemo3)
+			return msg.Send(c, BOT_PHRASE_GREETING, database.STATE_MAIN_MENU, keyboardMain)
+		default:
+			return msg.Send(c, BOT_PHRASE_GREETING, database.STATE_MAIN_MENU, keyboardMain)
+		}
 	case messages.MESSAGE_TEXT:
-		keyboardMain := &[][]requests.KeyboardKey{
-			{{Id: "1", Text: "Памятка сотрудника"}},
-			{{Id: "2", Text: "Положение о персонале"}},
-			{{Id: "3", Text: "Регламент о пожеланиях"}},
-			{{Id: "9", Text: "Закрыть обращение"}},
-			{{Id: "0", Text: "Перевести на специалиста"}},
-		}
-		keyboardParting := &[][]requests.KeyboardKey{
-			{{Id: "1", Text: "Да"}, {Id: "2", Text: "Нет"}},
-			{{Id: "0", Text: "Перевести на специалиста"}},
-		}
+		text := strings.ToLower(strings.TrimSpace(msg.Text))
 
 		switch chatState.CurrentState {
 		case database.STATE_DUMMY, database.STATE_GREETINGS:
 			return msg.Send(c, BOT_PHRASE_GREETING, database.STATE_MAIN_MENU, keyboardMain)
 		case database.STATE_MAIN_MENU:
 			comment := BOT_PHRASE_FILE_SENDED
-			switch strings.ToLower(strings.TrimSpace(msg.Text)) {
+			switch text {
 			case "1", "памятка сотрудника":
 				msg.Send(c, BOT_PHRASE_FILE_SENDING, database.STATE_PARTING, nil)
 
@@ -187,7 +196,7 @@ func processMessage(c *gin.Context, msg *messages.Message, chatState *database.C
 				return msg.Send(c, BOT_PHRASE_SORRY, database.STATE_MAIN_MENU, keyboardMain)
 			}
 		case database.STATE_PARTING:
-			switch strings.ToLower(strings.TrimSpace(msg.Text)) {
+			switch text {
 			case "1", "да":
 				return msg.Send(c, BOT_PHRASE_GREETING, database.STATE_MAIN_MENU, keyboardMain)
 			case "2", "нет":

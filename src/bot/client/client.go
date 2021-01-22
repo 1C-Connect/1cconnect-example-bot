@@ -44,6 +44,27 @@ func SetHook(lineId uuid.UUID) (content []byte, err error) {
 		Id:   lineId,
 		Type: "bot",
 		Url:  cnf.Server.Host + "/connect-push/receive/",
+		/*
+			// Пример меню для перевода
+			BotScenarioPoint: &[]requests.BotScenarioPoint{
+				requests.BotScenarioPoint{
+					Text: "Как добавить сотрудника в 1С-Коннект?",
+					Data: "add_collegue,level:1",
+				},
+				requests.BotScenarioPoint{
+					Text:        "Группа сценариев",
+					Description: "Вложенный уровень",
+					Data:        "add_collegue,level:1",
+					Childs: &[]requests.BotScenarioPoint{
+						requests.BotScenarioPoint{
+							Text:        "Третий уровень заведения сотрудника",
+							Description: "Если уже залогинен в УС",
+							Data:        "add_collegue,level:3",
+						},
+					},
+				},
+			},
+		*/
 	}
 	jsonData, err := json.Marshal(data)
 
