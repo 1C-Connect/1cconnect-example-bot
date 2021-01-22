@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"connect-companion/bot/requests"
 	"connect-companion/config"
@@ -24,7 +25,15 @@ func Configure(c *config.Conf) {
 }
 
 var (
-	client = &http.Client{}
+	client = &http.Client{
+		Timeout: 20 * time.Second,
+		Transport: &http.Transport{
+			IdleConnTimeout:     30 * time.Second,
+			DisableKeepAlives:   false,
+			MaxIdleConnsPerHost: 5,
+			DisableCompression:  true,
+		},
+	}
 )
 
 type (
