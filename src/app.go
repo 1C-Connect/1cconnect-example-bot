@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"connect-companion/bot"
+	"connect-companion/bot/client"
 	"connect-companion/config"
 	"connect-companion/database"
 	"connect-companion/logger"
@@ -47,7 +48,7 @@ func main() {
 	app := gin.Default()
 	app.Use(config.Inject(cnf), database.Inject("db", db))
 
-	bot.Configure(cnf)
+	client.Configure(cnf)
 	bot.InitHooks(app, cnf.Line)
 
 	srv := &http.Server{

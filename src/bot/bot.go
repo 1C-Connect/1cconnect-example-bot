@@ -122,15 +122,6 @@ func changeState(c *gin.Context, msg *messages.Message, chatState *database.Chat
 	return nil
 }
 
-func checkErrorForSend(msg *messages.Message, err error, nextState database.ChatState) (database.ChatState, error) {
-	if err != nil {
-		logger.Warning("Get error while send message to line", msg.LineId, "for user", msg.UserId, "with error", err)
-		return database.STATE_GREETINGS, err
-	}
-
-	return nextState, nil
-}
-
 func processMessage(c *gin.Context, msg *messages.Message, chatState *database.Chat) (database.ChatState, error) {
 	switch msg.MessageType {
 	case messages.MESSAGE_TREATMENT_START_BY_USER:
@@ -140,9 +131,8 @@ func processMessage(c *gin.Context, msg *messages.Message, chatState *database.C
 		messages.MESSAGE_TREATMENT_START_BY_SPEC,
 		messages.MESSAGE_TREATMENT_CLOSE,
 		messages.MESSAGE_TREATMENT_CLOSE_ACTIVE:
-		_, err := HideKeyboard(msg.LineId, msg.UserId)
 
-		return checkErrorForSend(msg, err, database.STATE_GREETINGS)
+		return msg.Start(database.STATE_GREETINGS)
 	case messages.MESSAGE_TEXT:
 		keyboardMain := &[][]requests.KeyboardKey{
 			{{Id: "1", Text: "Памятка сотрудника"}},
@@ -158,95 +148,58 @@ func processMessage(c *gin.Context, msg *messages.Message, chatState *database.C
 
 		switch chatState.CurrentState {
 		case database.STATE_DUMMY, database.STATE_GREETINGS:
-			_, err := SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_GREETING, keyboardMain)
-
-			return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
+			return msg.Send(c, BOT_PHRASE_GREETING, database.STATE_MAIN_MENU, keyboardMain)
 		case database.STATE_MAIN_MENU:
 			comment := BOT_PHRASE_FILE_SENDED
 			switch strings.ToLower(strings.TrimSpace(msg.Text)) {
 			case "1", "памятка сотрудника":
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
+				msg.Send(c, BOT_PHRASE_FILE_SENDING, database.STATE_PARTING, nil)
 
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Памятка сотрудника.pdf"))
-				_, err := SendFile(c, false, msg.LineId, msg.UserId, "Памятка сотрудника.pdf", filePath, &comment, nil)
+				msg.SendFile(c, false, "Памятка сотрудника.pdf", filePath, &comment, database.STATE_PARTING, nil)
 
 				time.Sleep(3 * time.Second)
 
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
-
-				return checkErrorForSend(msg, err, database.STATE_PARTING)
+				return msg.Send(c, BOT_PHRASE_AGAIN, database.STATE_PARTING, keyboardParting)
 			case "2", "положение о персонале":
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
+				msg.Send(c, BOT_PHRASE_FILE_SENDING, database.STATE_PARTING, nil)
 
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Положение о персонале.pdf"))
-				_, err := SendFile(c, false, msg.LineId, msg.UserId, "Положение о персонале.pdf", filePath, &comment, nil)
+				msg.SendFile(c, false, "Положение о персонале.pdf", filePath, &comment, database.STATE_PARTING, nil)
 
 				time.Sleep(3 * time.Second)
 
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
-
-				return checkErrorForSend(msg, err, database.STATE_PARTING)
+				return msg.Send(c, BOT_PHRASE_AGAIN, database.STATE_PARTING, keyboardParting)
 			case "3", "регламент о пожеланиях":
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_FILE_SENDING, nil)
+				msg.Send(c, BOT_PHRASE_FILE_SENDING, database.STATE_PARTING, nil)
 
 				filePath, _ := filepath.Abs(filepath.Join(cnf.FilesDir, "Регламент.pdf"))
-				_, err := SendFile(c, false, msg.LineId, msg.UserId, "Регламент.pdf", filePath, &comment, nil)
+				msg.SendFile(c, false, "Регламент.pdf", filePath, &comment, database.STATE_PARTING, nil)
 
 				time.Sleep(3 * time.Second)
 
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_AGAIN, keyboardParting)
-
-				return checkErrorForSend(msg, err, database.STATE_PARTING)
+				return msg.Send(c, BOT_PHRASE_AGAIN, database.STATE_PARTING, keyboardParting)
 			case "9", "закрыть обращение":
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_BYE, nil)
-
-				_, err := CloseTreatment(msg.LineId, msg.UserId)
-
-				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
+				return msg.CloseTreatment(c, BOT_PHRASE_BYE, database.STATE_GREETINGS)
 			case "0", "перевести на специалиста":
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_RETOUTING, nil)
-
-				_, err := RerouteTreatment(msg.LineId, msg.UserId)
-
-				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
+				return msg.RerouteTreatment(c, BOT_PHRASE_RETOUTING, database.STATE_GREETINGS)
 			default:
-				_, err := SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_SORRY, keyboardMain)
-
-				return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
+				return msg.Send(c, BOT_PHRASE_SORRY, database.STATE_MAIN_MENU, keyboardMain)
 			}
 		case database.STATE_PARTING:
 			switch strings.ToLower(strings.TrimSpace(msg.Text)) {
 			case "1", "да":
-				_, err := SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_GREETING, keyboardMain)
-
-				return checkErrorForSend(msg, err, database.STATE_MAIN_MENU)
+				return msg.Send(c, BOT_PHRASE_GREETING, database.STATE_MAIN_MENU, keyboardMain)
 			case "2", "нет":
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_BYE, nil)
-
-				time.Sleep(500 * time.Millisecond)
-
-				_, err := CloseTreatment(msg.LineId, msg.UserId)
-
-				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
+				return msg.CloseTreatment(c, BOT_PHRASE_BYE, database.STATE_GREETINGS)
 			case "0", "перевести на специалиста":
-				_, _ = SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_RETOUTING, nil)
-
-				time.Sleep(500 * time.Millisecond)
-
-				_, err := RerouteTreatment(msg.LineId, msg.UserId)
-
-				return checkErrorForSend(msg, err, database.STATE_GREETINGS)
+				return msg.RerouteTreatment(c, BOT_PHRASE_RETOUTING, database.STATE_GREETINGS)
 			default:
-				_, err := SendMessage(c, msg.LineId, msg.UserId, BOT_PHRASE_SORRY, keyboardParting)
-
-				return checkErrorForSend(msg, err, database.STATE_PARTING)
+				return msg.Send(c, BOT_PHRASE_SORRY, database.STATE_PARTING, keyboardParting)
 			}
 		}
 	case messages.MESSAGE_FILE:
-		_, err := HideKeyboard(msg.LineId, msg.UserId)
-		_, err = RerouteTreatment(msg.LineId, msg.UserId)
-
-		return checkErrorForSend(msg, err, database.STATE_GREETINGS)
+		return msg.StartAndReroute(database.STATE_GREETINGS)
 	}
 
 	return database.STATE_DUMMY, errors.New("I don't know hat i mus do!")
